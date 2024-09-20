@@ -10,7 +10,9 @@ import '../../../../utils/constants/colors.dart';
 import '../../../../utils/helpers/Thelper_functions.dart';
 
 class ExitStatus extends StatefulWidget {
-  const ExitStatus({Key? key}) : super(key: key);
+
+  final String projectName;
+  const ExitStatus({Key? key, required this.projectName}) : super(key: key);
 
   @override
   State<ExitStatus> createState() => _ExitStatusState();
@@ -31,10 +33,11 @@ class _ExitStatusState extends State<ExitStatus> {
       _isLoading = true;
     });
     try {
-      final response = await http.get(Uri.parse('http://44.214.230.69:8000/exits/'));
+      final response = await http.get(Uri.parse('http://44.214.230.69:8000/exits/${widget.projectName}/'));
 
       if (response.statusCode == 200) {
         final List<dynamic> responseData = json.decode(response.body);
+        print(responseData);
         setState(() {
           _data = List<Map<String, dynamic>>.from(responseData);
         });

@@ -6,18 +6,20 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:turnstileadmin_v2/utils/constants/colors.dart';
 import 'package:turnstileadmin_v2/utils/helpers/Thelper_functions.dart';
-
-import 'features/presentations/screens/Documents/documents.dart';
+import 'features/presentations/models/project.dart';
+import 'features/presentations/screens/Documents/DocPage.dart';
 import 'features/presentations/screens/Profile/profile.dart';
 import 'features/presentations/screens/analytics/analytics.dart';
-import 'features/presentations/screens/home/home.dart';
+import 'features/presentations/screens/home/project_detail.dart';
 
 class NavigationMenu extends StatelessWidget {
-  const NavigationMenu({super.key});
+  final Project project;
+  const NavigationMenu({super.key, required this.project});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(NavigationController());
+    print(project.name);
+    final controller = Get.put(NavigationController(project: project));
     final darkMode = THelperFunctions.isDarkMode(context);
     return Scaffold(
       bottomNavigationBar: Obx(
@@ -42,13 +44,24 @@ class NavigationMenu extends StatelessWidget {
 }
 
 
-class NavigationController extends GetxController{
-  final Rx<int> selectedIndex = 0.obs;
 
-  final screens = [
-    HomePage(),
-    AnalyticsPage(),
-    DocumentPage(),
-    ProfileScreen(),
-  ];
+
+class NavigationController extends GetxController {
+  final Rx<int> selectedIndex = 0.obs;
+  late final List<Widget> screens;
+
+  final Project project;
+  NavigationController({required this.project});
+
+  @override
+  void onInit() {
+    super.onInit();
+    screens = [
+      ProjectDetailScreen(project: project),
+      AnalyticsPage(),
+      DocPage(project: project),
+      ProfileScreen(),
+    ];
+  }
 }
+

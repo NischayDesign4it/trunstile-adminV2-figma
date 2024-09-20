@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../common/TButton.dart';
 import '../../../../utils/constants/colors.dart';
@@ -26,7 +27,42 @@ class _TSignupFormState extends State<TSignupForm> {
   final TextEditingController jobRoleController = TextEditingController();
   final TextEditingController jobLocationController = TextEditingController();
   final TextEditingController tagIDController = TextEditingController();
-  bool _obscureText = true; // Initial state for password visibility
+  bool _obscureText = true;
+  bool _rememberMe = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCredentials(); // Load stored credentials when the widget is initialized
+  }
+
+  Future<void> _loadCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('email') ?? '';
+    final password = prefs.getString('password') ?? '';
+    final name = prefs.getString('name') ?? '';
+    final companyName = prefs.getString('companyName') ?? '';
+    final companyID = prefs.getString('companyName') ?? '';
+    final jobRole = prefs.getString('jobRole') ?? '';
+    final jobLocation = prefs.getString('jobLocation') ?? '';
+    final tagID = prefs.getString('tagID') ?? '';
+
+    if (email.isNotEmpty && password.isNotEmpty) {
+      emailController.text = email;
+      passwordController.text = password;
+      nameController.text = name;
+      companyNameController.text = companyName;
+      companyIDController.text = companyID;
+      jobRoleController.text = jobRole;
+      jobLocationController.text = jobLocation;
+      tagIDController.text = tagID;
+
+      setState(() {
+        _rememberMe = true;
+      });
+    }
+  }
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -223,7 +259,24 @@ class _TSignupFormState extends State<TSignupForm> {
               children: [
                 Row(
                   children: [
-                    Checkbox(value: false, onChanged: (value) {}),
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                      fillColor: MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.selected)) {
+                            return TColors.primaryColorButton; // Color when checked
+                          }
+                          return TColors.textWhite; // Color when unchecked
+                        },
+                      ),
+                      checkColor: TColors.textWhite, // Color of the checkmark
+                    ),
+
                     Text(TTexts.rememberMe),
                   ],
                 ),

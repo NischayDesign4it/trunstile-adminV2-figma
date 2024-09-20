@@ -5,7 +5,7 @@ import '../utils/constants/colors.dart';
 
 class TButton extends StatelessWidget {
   const TButton({
-    super.key, required this.title, required this.onPressed,
+    super.key, required this.title, required this.onPressed
   });
   final String title;
   final VoidCallback onPressed;

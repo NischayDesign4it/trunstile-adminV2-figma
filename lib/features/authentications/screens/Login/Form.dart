@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import '../../../../Navigation_menu.dart';
+import 'package:turnstileadmin_v2/features/presentations/screens/home/home.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../../common/TButton.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -17,9 +19,19 @@ class TLoginForm extends StatefulWidget {
 }
 
 class _TLoginFormState extends State<TLoginForm> {
-  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  bool _obscureText = true; // Initial state for password visibility
+  bool _obscureText = true;
+  bool _rememberMe = false;
+
+
+
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCredentials(); // Load stored credentials when the widget is initialized
+  }
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -27,8 +39,23 @@ class _TLoginFormState extends State<TLoginForm> {
     });
   }
 
+  Future<void> _loadCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('email') ?? '';
+    final password = prefs.getString('password') ?? '';
+
+    if (email.isNotEmpty && password.isNotEmpty) {
+
+      emailController.text = email;
+      passwordController.text = password;
+      setState(() {
+        _rememberMe = true;
+      });
+    }
+  }
+
   Future<void> _submitForm(BuildContext context) async {
-    String email = usernameController.text.trim();
+    String email = emailController.text.trim();
     String password = passwordController.text.trim();
 
     // Example validation
@@ -42,7 +69,7 @@ class _TLoginFormState extends State<TLoginForm> {
 
     if (loggedIn) {
       // Navigate to dashboard on successful login
-      Get.to(() => NavigationMenu());
+      Get.to(() => HomePage());
     } else {
 
       ScaffoldMessenger.of(context).showSnackBar(Get.snackbar(
@@ -60,7 +87,7 @@ class _TLoginFormState extends State<TLoginForm> {
         child: Column(
           children: [
             TextFormField(
-              controller: usernameController,
+              controller: emailController,
               cursorColor: TColors.textBlack,
               style: TextStyle(color: TColors.textBlack),
               decoration: InputDecoration(
@@ -103,7 +130,23 @@ class _TLoginFormState extends State<TLoginForm> {
               children: [
                 Row(
                   children: [
-                    Checkbox(value: false, onChanged: (value) {}),
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                      fillColor: MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.selected)) {
+                            return TColors.primaryColorButton; // Color when checked
+                          }
+                          return TColors.textWhite; // Color when unchecked
+                        },
+                      ),
+                      checkColor: TColors.textWhite, // Color of the checkmark
+                    ),
                     Text(TTexts.rememberMe),
                   ],
                 ),

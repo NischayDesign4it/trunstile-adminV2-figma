@@ -4,23 +4,21 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:http/http.dart' as http;
 import 'package:turnstileadmin_v2/common/TButton.dart';
+import 'package:turnstileadmin_v2/features/presentations/models/project.dart';
 
 import '../../../../common/TAppBar.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
-import '../../../../utils/constants/text_strings.dart';
 import '../../../../utils/helpers/Thelper_functions.dart';
 import '../../../authentications/screens/Login/TFormDivider.dart';
-import '../preshift/preshift.dart';
-import '../toolbox/toolbox.dart';
 
 
 class DocumentPage extends StatefulWidget {
-  DocumentPage({Key? key}) : super(key: key);
+  final Project project;
+  DocumentPage({Key? key, required this.project}) : super(key: key);
 
   @override
   _DocumentPageState createState() => _DocumentPageState();
@@ -71,7 +69,9 @@ class _DocumentPageState extends State<DocumentPage> {
       ..files.add(await http.MultipartFile.fromPath(
         'attachments',
         _selectedFile!.path,
-      ));
+      ))
+    ..fields['site'] = widget.project.name;
+
 
     try {
       var response = await request.send();
@@ -196,7 +196,7 @@ class _DocumentPageState extends State<DocumentPage> {
         _isLoading
 
             ? Center(child: CircularProgressIndicator(
-          color:  dark ? TColors.textWhite : TColors.textBlack,
+          color:  dark ? TColors.textWhite : TColors.primaryColorButton,
         )) // Show loading indicator if uploading
             : TButton(title: "Upload", onPressed: _uploadFile),
       ],
@@ -207,11 +207,13 @@ class _DocumentPageState extends State<DocumentPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.project.name);
+
     final dark = THelperFunctions.isDarkMode(context);
     return Scaffold(
       backgroundColor: dark ? TColors.textBlack : TColors.textWhite,
       appBar: TAppBar(
-        title: TTexts.doc,
+        title: "Orientation",
         leadingIcon: Iconsax.notification, onLeadingIconPressed: () {  },
       ),
       body: Padding(
@@ -250,9 +252,10 @@ class _DocumentPageState extends State<DocumentPage> {
             SizedBox(height: TSizes.spaceBtwItems),
 
             Expanded(child: _buildSelectedFileWidget()),
-            TButton(title: "ToolBox", onPressed: () => Get.to(() => ToolBoxScreen())),
-            SizedBox(height: TSizes.sm),
-            TButton(title: "PreShift", onPressed: () => Get.to(() => PreShiftScreen()))
+            // TButton(title: "ToolBox", onPressed: () => Get.to(() => ToolBoxScreen())),
+            // SizedBox(height: TSizes.sm),
+            // TButton(title: "PreShift", onPressed: () => Get.to(() => PreShiftScreen())),
+            //
 
           ],
         ),

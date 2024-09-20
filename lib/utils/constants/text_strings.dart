@@ -61,6 +61,9 @@ class TTexts{
   static const String qrSubTitle  = "Make sure QR code is within frame";
   static const String myComplyTitle  = "Scan MyComply validation";
   static const String myTagIdTitle  = "Scan TAG ID";
+  static const String active  = "Active";
+  static const String inactive  = "Inactive";
+  static const String editDetail  = "EDIT WORKER DETAIL";
 
 
 

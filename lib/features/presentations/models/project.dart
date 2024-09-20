@@ -1,28 +1,28 @@
 class Project {
-  final String picture;
+  final String pictureUrl;
   final String name;
   final String location;
-  final int totalUsers;
-  final int activeUsers;
-  final int inactiveUsers;
+  final int totalUser;
+  final int activeUser;
+  final int inactiveUser;
 
   Project({
-    required this.picture,
+    required this.pictureUrl,
     required this.name,
     required this.location,
-    required this.totalUsers,
-    required this.activeUsers,
-    required this.inactiveUsers,
+    required this.totalUser,
+    required this.activeUser,
+    required this.inactiveUser,
   });
 
   factory Project.fromJson(Map<String, dynamic> json) {
     return Project(
-      picture: json['picture'] ?? '',
+      pictureUrl: json['picture_url'] ?? '',
       name: json['name'] ?? 'No Name',
       location: json['location'] ?? 'No Location',
-      totalUsers: json['total_users'] ?? 0,
-      activeUsers: json['active_users'] ?? 0,
-      inactiveUsers: json['inactive_users'] ?? 0,
+      totalUser: json['total_user'] ?? 0,
+      activeUser: json['active_user'] ?? 0,
+      inactiveUser: json['inactive_user'] ?? 0,
     );
   }
 }

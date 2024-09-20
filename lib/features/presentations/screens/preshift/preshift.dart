@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -8,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:turnstileadmin_v2/features/presentations/models/project.dart';
 import 'package:url_launcher/url_launcher.dart'; // Import url_launcher package
 import 'package:turnstileadmin_v2/common/TAppBar.dart';
 import 'package:turnstileadmin_v2/common/TButton.dart';
@@ -18,7 +17,8 @@ import '../../../../utils/helpers/Thelper_functions.dart';
 import '../../../authentications/screens/Login/TFormDivider.dart';
 
 class PreShiftScreen extends StatefulWidget {
-  const PreShiftScreen({super.key});
+  final Project project;
+  const PreShiftScreen({super.key, required this.project});
 
   @override
   State<PreShiftScreen> createState() => _PreShiftScreenState();
@@ -30,31 +30,37 @@ class _PreShiftScreenState extends State<PreShiftScreen> {
   bool isLoading = false;
   bool isUploading = false;
   File? _selectedFile;
-  String selectedProject = 'PROJECT 1'; // Add this line for the project selection
+  String selectedProject = 'PROJECT 1';
 
   @override
   void initState() {
     super.initState();
-    selectedDate = DateTime.now(); // Set initial date to current date
+    selectedDate = DateTime.now();
     toolDocLinks = [];
-    _callToolBoxAPI(); // Fetch documents for the current date
+    _callToolBoxAPI(widget.project);
   }
 
-  Future<void> _callToolBoxAPI() async {
+
+  Future<void> _callToolBoxAPI(Project project) async {
     setState(() {
       isLoading = true;
     });
 
-    final uri = Uri.parse('http://44.214.230.69:8000/preshift_api/');
+    final uri = Uri.parse('http://44.214.230.69:8000/preshift_api/${project.name}/');
+    print('Requesting URL: $uri');
     final response = await http.get(uri);
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
     if (response.statusCode == 200) {
       final List<dynamic> responseData = jsonDecode(response.body);
 
       print('Response Data: $responseData');
 
       final filteredDocs = responseData.where((doc) {
-        DateTime docDate = DateTime.parse(doc['date']).toLocal(); // Convert to local time if needed
-        DateTime selectedDateLocal = selectedDate.toLocal(); // Use selectedDate
+        DateTime docDate = DateTime.parse(doc['date']).toLocal();
+        DateTime selectedDateLocal = selectedDate.toLocal();
         print('Document Date: $docDate, Selected Date: $selectedDateLocal'); // Debug print
         return docDate.year == selectedDateLocal.year &&
             docDate.month == selectedDateLocal.month &&
@@ -95,6 +101,7 @@ class _PreShiftScreenState extends State<PreShiftScreen> {
     }
   }
 
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -105,7 +112,7 @@ class _PreShiftScreenState extends State<PreShiftScreen> {
     if (pickedDate != null && pickedDate != selectedDate) {
       setState(() {
         selectedDate = pickedDate;
-        _callToolBoxAPI(); // Call API with the newly selected date
+        _callToolBoxAPI(widget.project); // Call API with the newly selected date
       });
     }
   }
@@ -148,7 +155,7 @@ class _PreShiftScreenState extends State<PreShiftScreen> {
 
     var url = Uri.parse('http://44.214.230.69:8000/preshift_api/');
     var request = http.MultipartRequest('POST', url)
-      ..fields['site'] = selectedProject  // Use the selected project here
+      ..fields['site'] = widget.project.name
       ..files.add(await http.MultipartFile.fromPath(
         'document',
         _selectedFile!.path,
@@ -175,8 +182,8 @@ class _PreShiftScreenState extends State<PreShiftScreen> {
         },
       );
       setState(() {
-        _selectedFile = null; // Clear selected file after upload
-        _callToolBoxAPI(); // Refresh the documents list
+        _selectedFile = null;
+        _callToolBoxAPI(widget.project);
       });
     } else {
       showDialog(
@@ -203,35 +210,6 @@ class _PreShiftScreenState extends State<PreShiftScreen> {
     });
   }
 
-  Widget _buildProjectDropdown() {
-    return DropdownButton<String>(
-      value: selectedProject,
-      icon: Icon(Iconsax.arrow_down, color: TColors.primaryColorButton), // Add an icon
-      style: TextStyle(color: Colors.blue, fontSize: 16), // Style the text
-      underline: Container(
-        height: 2,
-        color: TColors.primaryColorButton, // Customize the underline
-      ),
-      items: <String>['PROJECT 1', 'PROJECT 2', 'PROJECT 3']
-          .map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Row(
-            children: [
-              Icon(Icons.folder, color: TColors.primaryColorButton), // Add an icon for each item
-              SizedBox(width: 10), // Add some space between icon and text
-              Text(value, style: TextStyle(color: Colors.black)), // Style the text
-            ],
-          ),
-        );
-      }).toList(),
-      onChanged: (String? newValue) {
-        setState(() {
-          selectedProject = newValue!;
-        });
-      },
-    );
-  }
 
   Widget _buildSelectedFileWidget() {
     final dark = THelperFunctions.isDarkMode(context);
@@ -292,7 +270,6 @@ class _PreShiftScreenState extends State<PreShiftScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProjectDropdown(),
                 SizedBox(height: TSizes.sm,),
                 DottedBorder(
                   borderType: BorderType.RRect,

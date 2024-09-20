@@ -13,16 +13,16 @@ import '../../../../utils/constants/colors.dart';
 import '../../../../utils/helpers/Thelper_functions.dart';
 import 'edit_worker.dart';
 
-class WorkerManagement extends StatefulWidget {
+class onSite extends StatefulWidget {
 
   final String projectName;
-  const WorkerManagement({Key? key, required this.projectName}) : super(key: key);
+  const onSite({Key? key, required this.projectName}) : super(key: key);
 
   @override
-  State<WorkerManagement> createState() => _WorkerManagementState();
+  State<onSite> createState() => _onSiteState();
 }
 
-class _WorkerManagementState extends State<WorkerManagement> {
+class _onSiteState extends State<onSite> {
   late Map<String, List<Map<String, dynamic>>> _groupedData = {};
   Map<String, bool> _selectedWorkers = {};
   bool _isLoading = true;
@@ -99,50 +99,50 @@ class _WorkerManagementState extends State<WorkerManagement> {
     }
   }
 
-  Future<void> _bulkUpdateStatus(String status) async {
-    try {
-      final List<Map<String, String>> selectedEmails = _selectedWorkers.entries
-          .where((entry) => entry.value)
-          .map((entry) => {'email': entry.key, 'status': status})
-          .toList();
-
-      if (selectedEmails.isEmpty) {
-        Get.snackbar('No Selection', 'Please select at least one worker.',
-            snackPosition: SnackPosition.TOP, colorText: TColors.textWhite, backgroundColor: TColors.textBlack);
-        return;
-      }
-
-      final response = await http.post(
-        Uri.parse('http://44.214.230.69:8000/bulk_active_inactive/'),
-        body: json.encode(selectedEmails),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-
-        if (responseData['status'] == 'success') {
-          setState(() {
-            fetchData(); // Refresh the worker list after updating status
-            _selectedWorkers.clear(); // Uncheck all checkboxes
-          });
-          Get.snackbar('Success', 'Status updated successfully',
-              snackPosition: SnackPosition.TOP, colorText: TColors.textWhite, backgroundColor: TColors.textBlack);
-        } else {
-          throw Exception('Unexpected server response: ${responseData}');
-        }
-      } else {
-        throw Exception('Unexpected response status code: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error updating status: $error');
-      Get.snackbar('Error', 'Failed to update status: $error',
-          snackPosition: SnackPosition.TOP, colorText: TColors.textWhite, backgroundColor: TColors.textBlack);
-    }
-  }
+  // Future<void> _bulkUpdateStatus(String status) async {
+  //   try {
+  //     final List<Map<String, String>> selectedEmails = _selectedWorkers.entries
+  //         .where((entry) => entry.value)
+  //         .map((entry) => {'email': entry.key, 'status': status})
+  //         .toList();
+  //
+  //     if (selectedEmails.isEmpty) {
+  //       Get.snackbar('No Selection', 'Please select at least one worker.',
+  //           snackPosition: SnackPosition.TOP, colorText: TColors.textWhite, backgroundColor: TColors.textBlack);
+  //       return;
+  //     }
+  //
+  //     final response = await http.post(
+  //       Uri.parse('http://44.214.230.69:8000/bulk_active_inactive/'),
+  //       body: json.encode(selectedEmails),
+  //       headers: {'Content-Type': 'application/json'},
+  //     );
+  //
+  //     print('Response status code: ${response.statusCode}');
+  //     print('Response body: ${response.body}');
+  //
+  //     if (response.statusCode == 200) {
+  //       final responseData = json.decode(response.body);
+  //
+  //       if (responseData['status'] == 'success') {
+  //         setState(() {
+  //           fetchData(); // Refresh the worker list after updating status
+  //           _selectedWorkers.clear(); // Uncheck all checkboxes
+  //         });
+  //         Get.snackbar('Success', 'Status updated successfully',
+  //             snackPosition: SnackPosition.TOP, colorText: TColors.textWhite, backgroundColor: TColors.textBlack);
+  //       } else {
+  //         throw Exception('Unexpected server response: ${responseData}');
+  //       }
+  //     } else {
+  //       throw Exception('Unexpected response status code: ${response.statusCode}');
+  //     }
+  //   } catch (error) {
+  //     print('Error updating status: $error');
+  //     Get.snackbar('Error', 'Failed to update status: $error',
+  //         snackPosition: SnackPosition.TOP, colorText: TColors.textWhite, backgroundColor: TColors.textBlack);
+  //   }
+  // }
 
 
   void _showDeleteConfirmationDialog(Map<String, dynamic> worker) {
@@ -180,11 +180,11 @@ class _WorkerManagementState extends State<WorkerManagement> {
     return Scaffold(
       backgroundColor: dark ? TColors.textBlack : TColors.textWhite,
       appBar: TAppBar(
-        title: 'Workers list',
+        title: 'ON-Site user',
         leadingIcon: Iconsax.user_add,
-        onLeadingIconPressed: () {
-          Get.to(() => WorkerScreen());
-        },
+        // onLeadingIconPressed: () {
+        //   Get.to(() => WorkerScreen());
+        // },
       ),
       body: RefreshIndicator(
         onRefresh: () => fetchData(), // Call fetchData method when refreshing
@@ -247,23 +247,23 @@ class _WorkerManagementState extends State<WorkerManagement> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Checkbox(
-                                  value: isSelected,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      _selectedWorkers[worker['email']] = value ?? false;
-                                    });
-                                  },
-                                  fillColor: MaterialStateProperty.resolveWith<Color>(
-                                        (Set<MaterialState> states) {
-                                      if (states.contains(MaterialState.selected)) {
-                                        return TColors.primaryColorButton; // Color when checked
-                                      }
-                                      return TColors.textWhite; // Color when unchecked
-                                    },
-                                  ),
-                                  checkColor: TColors.textWhite,
-                                ),
+                                // Checkbox(
+                                //   value: isSelected,
+                                //   onChanged: (bool? value) {
+                                //     setState(() {
+                                //       _selectedWorkers[worker['email']] = value ?? false;
+                                //     });
+                                //   },
+                                //   fillColor: MaterialStateProperty.resolveWith<Color>(
+                                //         (Set<MaterialState> states) {
+                                //       if (states.contains(MaterialState.selected)) {
+                                //         return TColors.primaryColorButton; // Color when checked
+                                //       }
+                                //       return TColors.textWhite; // Color when unchecked
+                                //     },
+                                //   ),
+                                //   checkColor: TColors.textWhite,
+                                // ),
                                 IconButton(
                                   onPressed: () {
                                     _showDeleteConfirmationDialog(worker);
@@ -284,31 +284,31 @@ class _WorkerManagementState extends State<WorkerManagement> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: TButton(
-                      title: 'Active',
-                      onPressed: () {
-                        _bulkUpdateStatus('active');
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 8.0),
-                  Expanded(
-                    child: TButton(
-                      title: 'Inactive',
-                      onPressed: () {
-                        _bulkUpdateStatus('inactive');
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(25.0),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //     children: [
+            //       Expanded(
+            //         child: TButton(
+            //           title: 'Active',
+            //           onPressed: () {
+            //             _bulkUpdateStatus('active');
+            //           },
+            //         ),
+            //       ),
+            //       SizedBox(width: 8.0),
+            //       Expanded(
+            //         child: TButton(
+            //           title: 'Inactive',
+            //           onPressed: () {
+            //             _bulkUpdateStatus('inactive');
+            //           },
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -326,11 +326,7 @@ class _WorkerManagementState extends State<WorkerManagement> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Tag ID: ${worker['tag_id']}'),
-              Text('Company-Name: ${worker['company_name']}'),
-              Text('Job-Role: ${worker['job_role']}'),
-              Text('Job-Location: ${worker['job_location']}'),
-              Text('Company-ID: ${worker['mycompany_id']}'),
-              Text('email: ${worker['email']}'),
+              Text('Timestamp: ${worker['timestamp']}'),
               Text('Site Name: ${worker['site']}'),
               Text('Status: ${worker['status']}'),
 

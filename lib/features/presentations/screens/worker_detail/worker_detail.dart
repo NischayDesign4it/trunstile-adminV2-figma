@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/text_strings.dart';
 import '../../../../utils/helpers/Thelper_functions.dart';
+import '../QR/qrScreen.dart';
 
 class WorkerScreen extends StatefulWidget {
   const WorkerScreen({Key? key}) : super(key: key);
@@ -25,6 +27,8 @@ class _WorkerScreenState extends State<WorkerScreen> {
   File? _selectedImage;
   final picker = ImagePicker();
 
+
+
   // Controllers for the text fields
   final _nameController = TextEditingController();
   final _companyNameController = TextEditingController();
@@ -36,6 +40,29 @@ class _WorkerScreenState extends State<WorkerScreen> {
   final _siteController = TextEditingController();
 
 
+
+  @override
+  void dispose() {
+    _tagIDController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _navigateAndScanQr(BuildContext context) async {
+    final scannedData = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => QrScanner(title: TTexts.myTagIdTitle, subtitle: TTexts.qrSubTitle,)),
+    );
+
+    if (scannedData != null) {
+      setState(() {
+        _tagIDController.text = scannedData;
+      });
+    }
+  }
+
+
+
+
   Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     setState(() {
@@ -44,6 +71,8 @@ class _WorkerScreenState extends State<WorkerScreen> {
       }
     });
   }
+
+
 
   Future<void> _submitData() async {
     String url = "http://44.214.230.69:8000/users/";
@@ -193,7 +222,7 @@ class _WorkerScreenState extends State<WorkerScreen> {
         title: TTexts.workerDetail,
         leadingIcon: Iconsax.setting, // Replace with your leading icon
         onLeadingIconPressed: () {
-          // Define action on leading icon press
+
         },
       ),
       body: SingleChildScrollView(
@@ -415,15 +444,42 @@ class _WorkerScreenState extends State<WorkerScreen> {
                 ],
               ),
               SizedBox(height: TSizes.xs),
+              // TextFormField(
+              //   controller: _tagIDController,
+              //   cursorColor: TColors.textBlack,
+              //   style: TextStyle(color: TColors.textBlack),
+              //   decoration: InputDecoration(
+              //     suffixIcon: IconButton(onPressed: () => {
+              //       Get.to(() => QrScanner(title: TTexts.myTagIdTitle, subtitle: TTexts.qrSubTitle,))
+              //
+              //     }, icon: Icon(Iconsax.scan_barcode, color: TColors.textBlack,)),
+              //     hintText: TTexts.tagId, // Add a hint text for the description
+              //     hintStyle: TextStyle(color: TColors.textBlack.withOpacity(0.5)), // Hint text style
+              //     contentPadding: EdgeInsets.symmetric(
+              //       vertical: 12, // Increased vertical padding
+              //       horizontal: 15,
+              //     ),
+              //     filled: true,
+              //     border: OutlineInputBorder(
+              //       borderSide: BorderSide.none,
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //   ),
+              // ),
+
               TextFormField(
                 controller: _tagIDController,
                 cursorColor: TColors.textBlack,
                 style: TextStyle(color: TColors.textBlack),
                 decoration: InputDecoration(
-                  hintText: TTexts.tagId, // Add a hint text for the description
-                  hintStyle: TextStyle(color: TColors.textBlack.withOpacity(0.5)), // Hint text style
+                  suffixIcon: IconButton(
+                    onPressed: (){_navigateAndScanQr(context);},
+                    icon: Icon(Iconsax.scan_barcode, color: TColors.textBlack),
+                  ),
+                  hintText: TTexts.tagId,
+                  hintStyle: TextStyle(color: TColors.textBlack.withOpacity(0.5)),
                   contentPadding: EdgeInsets.symmetric(
-                    vertical: 12, // Increased vertical padding
+                    vertical: 12,
                     horizontal: 15,
                   ),
                   filled: true,
@@ -433,6 +489,8 @@ class _WorkerScreenState extends State<WorkerScreen> {
                   ),
                 ),
               ),
+
+
               SizedBox(height: TSizes.spaceBtwItems),
 
               // Worker ID
@@ -555,3 +613,5 @@ class _WorkerScreenState extends State<WorkerScreen> {
     );
   }
 }
+
+

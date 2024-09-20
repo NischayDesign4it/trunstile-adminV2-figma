@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+
+
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -6,23 +9,22 @@ import 'package:turnstileadmin_v2/features/presentations/screens/worker_detail/w
 import 'package:turnstileadmin_v2/utils/constants/sizes.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../../../common/TAppBar.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/helpers/Thelper_functions.dart';
 import 'edit_worker.dart';
 
-class WorkerManagement extends StatefulWidget {
+class PendingWorker extends StatefulWidget {
 
   final String projectName;
-  const WorkerManagement({Key? key, required this.projectName}) : super(key: key);
+  const PendingWorker({Key? key, required this.projectName}) : super(key: key);
 
   @override
-  State<WorkerManagement> createState() => _WorkerManagementState();
+  State<PendingWorker> createState() => _PendingWorkerState();
 }
 
-class _WorkerManagementState extends State<WorkerManagement> {
+class _PendingWorkerState extends State<PendingWorker> {
   late Map<String, List<Map<String, dynamic>>> _groupedData = {};
   Map<String, bool> _selectedWorkers = {};
   bool _isLoading = true;
@@ -35,8 +37,7 @@ class _WorkerManagementState extends State<WorkerManagement> {
 
   Future<void> fetchData() async {
     try {
-
-      final response = await http.get(Uri.parse('http://44.214.230.69:8000/site_users/${widget.projectName}/'));
+      final response = await http.get(Uri.parse('http://44.214.230.69:8000/pending_users/${widget.projectName}/'));
 
       if (response.statusCode == 200) {
         print(widget.projectName);
@@ -180,7 +181,7 @@ class _WorkerManagementState extends State<WorkerManagement> {
     return Scaffold(
       backgroundColor: dark ? TColors.textBlack : TColors.textWhite,
       appBar: TAppBar(
-        title: 'Workers list',
+        title: 'PENDING LIST',
         leadingIcon: Iconsax.user_add,
         onLeadingIconPressed: () {
           Get.to(() => WorkerScreen());
@@ -247,23 +248,23 @@ class _WorkerManagementState extends State<WorkerManagement> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Checkbox(
-                                  value: isSelected,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      _selectedWorkers[worker['email']] = value ?? false;
-                                    });
-                                  },
-                                  fillColor: MaterialStateProperty.resolveWith<Color>(
-                                        (Set<MaterialState> states) {
-                                      if (states.contains(MaterialState.selected)) {
-                                        return TColors.primaryColorButton; // Color when checked
-                                      }
-                                      return TColors.textWhite; // Color when unchecked
-                                    },
-                                  ),
-                                  checkColor: TColors.textWhite,
-                                ),
+                                // Checkbox(
+                                //   value: isSelected,
+                                //   onChanged: (bool? value) {
+                                //     setState(() {
+                                //       _selectedWorkers[worker['email']] = value ?? false;
+                                //     });
+                                //   },
+                                //   fillColor: MaterialStateProperty.resolveWith<Color>(
+                                //         (Set<MaterialState> states) {
+                                //       if (states.contains(MaterialState.selected)) {
+                                //         return TColors.primaryColorButton; // Color when checked
+                                //       }
+                                //       return TColors.textWhite; // Color when unchecked
+                                //     },
+                                //   ),
+                                //   checkColor: TColors.textWhite,
+                                // ),
                                 IconButton(
                                   onPressed: () {
                                     _showDeleteConfirmationDialog(worker);
@@ -284,31 +285,31 @@ class _WorkerManagementState extends State<WorkerManagement> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: TButton(
-                      title: 'Active',
-                      onPressed: () {
-                        _bulkUpdateStatus('active');
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 8.0),
-                  Expanded(
-                    child: TButton(
-                      title: 'Inactive',
-                      onPressed: () {
-                        _bulkUpdateStatus('inactive');
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //     children: [
+            //       Expanded(
+            //         child: TButton(
+            //           title: 'Active',
+            //           onPressed: () {
+            //             _bulkUpdateStatus('active');
+            //           },
+            //         ),
+            //       ),
+            //       SizedBox(width: 8.0),
+            //       Expanded(
+            //         child: TButton(
+            //           title: 'Inactive',
+            //           onPressed: () {
+            //             _bulkUpdateStatus('inactive');
+            //           },
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

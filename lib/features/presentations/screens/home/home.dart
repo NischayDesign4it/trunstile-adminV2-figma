@@ -3,16 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:turnstileadmin_v2/common/TAppBar.dart';
-import 'package:turnstileadmin_v2/common/TButton.dart';
-import 'package:turnstileadmin_v2/common/TOutlinedButton.dart';
+import '../../../../Navigation_menu.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/helpers/Thelper_functions.dart';
 import '../../controllers/project_controller.dart';
 import '../../models/project.dart';
 import '../Settings/settings.dart';
-import '../asset_detail/asset_list.dart';
-import '../worker_detail/worker_list.dart';
 
 
 
@@ -29,8 +26,7 @@ class HomePage extends StatelessWidget {
       appBar: TAppBar(
         title: "Projects",
         leadingIcon: Iconsax.setting,
-        onLeadingIconPressed:  () =>
-            Get.to(() => SettingsPage()),
+        onLeadingIconPressed: () => Get.to(() => SettingsPage()),
       ),
       body: Obx(() {
         if (projectController.isLoading.value) {
@@ -56,103 +52,7 @@ class HomePage extends StatelessWidget {
   Widget buildCard(BuildContext context, Project project) {
     return GestureDetector(
       onTap: () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Row(
-                children: [
-                  Text("Project Details"),
-                  Spacer(),
-                  IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: Icon(Iconsax.close_circle))
-                ],
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 150.0,
-                      child: project.picture != null &&
-                          project.picture.isNotEmpty
-                          ? Ink.image(
-                        image: NetworkImage(project.picture),
-                        fit: BoxFit.cover,
-                      )
-                          : Center(
-                        child: Text(
-                          "No Image",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.0),
-                    Text(project.name,
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 8.0),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(width: 4.0),
-                        Expanded(
-                          child: Text(project.location),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text("Outgoing"),
-                        ),
-                        Icon(
-                          Icons.person,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(width: 2.0),
-                        Expanded(
-                          child: Text("TOTAL: ${project.totalUsers}"),
-                        ),
-                        Expanded(
-                          child: Text("Active: ${project.activeUsers}"),
-                        ),
-                        Expanded(
-                          child: Text("Inactive: ${project.inactiveUsers}"),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16.0),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: TOutlinedButton(
-                                title: "Workers",
-                                onPressed: () =>
-                                    Get.to(() => WorkerManagement()))),
-                        SizedBox(width: TSizes.sm),
-                        Expanded(
-                            child: TOutlinedButton(
-                                title: "Assets",
-                                onPressed: () =>
-                                    Get.to(() => assetManagement()))),
-                      ],
-                    ),
-                    SizedBox(height: 16.0),
-                    TButton(title: "Mark as Done", onPressed: () {}),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+        Get.to(() => NavigationMenu(project: project));
       },
       child: Card(
         elevation: 2.0,
@@ -160,18 +60,36 @@ class HomePage extends StatelessWidget {
           children: [
             Container(
               height: 150.0,
-              child: project.picture != null && project.picture.isNotEmpty
-                  ? Ink.image(
-                image: NetworkImage(project.picture),
+              width: double.infinity,
+              child: Image.network(
+                project.pictureUrl,
                 fit: BoxFit.cover,
-              )
-                  : Center(
-                child: Text(
-                  "No Image",
-                  style: TextStyle(color: Colors.grey),
-                ),
+                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: TColors.primaryColorButton,
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  }
+                },
+                errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                  return Center(
+                    child: Text(
+                      "Failed to load image",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  );
+                },
               ),
             ),
+
+
             Container(
               padding: EdgeInsets.only(top: 10.0, left: 10.0),
               alignment: Alignment.centerLeft,
@@ -206,13 +124,13 @@ class HomePage extends StatelessWidget {
                     color: Colors.grey,
                   ),
                   Expanded(
-                    child: Text("TOTAL: ${project.totalUsers}"),
+                    child: Text("TOTAL: ${project.totalUser}"),
                   ),
                   Expanded(
-                    child: Text("Active: ${project.activeUsers}"),
+                    child: Text("Active: ${project.activeUser}"),
                   ),
                   Expanded(
-                    child: Text("Inactive: ${project.inactiveUsers}"),
+                    child: Text("Inactive: ${project.inactiveUser}"),
                   ),
                 ],
               ),
