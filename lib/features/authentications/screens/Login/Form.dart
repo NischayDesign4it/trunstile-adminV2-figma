@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:turnstileadmin_v2/features/authentications/screens/forgotPassword.dart';
 import 'package:turnstileadmin_v2/features/presentations/screens/home/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -151,7 +152,9 @@ class _TLoginFormState extends State<TLoginForm> {
                   ],
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(() => ForgotPassword());
+                  },
                   child: Text(TTexts.forgotPassword),
                 ),
               ],

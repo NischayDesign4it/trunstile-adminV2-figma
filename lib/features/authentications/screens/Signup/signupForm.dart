@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:turnstileadmin_v2/features/authentications/screens/forgotPassword.dart';
 
 import '../../../../common/TButton.dart';
 import '../../../../utils/constants/colors.dart';
@@ -281,7 +282,9 @@ class _TSignupFormState extends State<TSignupForm> {
                   ],
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(() => ForgotPassword());
+                  },
                   child: Text(TTexts.forgotPassword),
                 ),
               ],
